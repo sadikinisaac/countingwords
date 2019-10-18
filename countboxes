@@ -1,0 +1,67 @@
+%matplotlib inline
+%%bash 
+cat requirements.txt
+import numpy as np 
+import cv2 
+
+import matplotlib.pyplot as plt 
+
+
+def get_contours(image_file):
+    """Given an image file, convert it to gray scale and find contours
+    
+    Args:
+        image_file (str): path to image file
+    
+    Return:
+        org_img (np.array): orginal image
+        im (np.array): np array image with contours
+        contours (np.array): 3d np shape location ? 
+        
+    """
+    image = cv2.imread(image_file) 
+    gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY) 
+    ret, thresh = cv2.threshold(gray_image,127, 255, 0)    
+    im, contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) 
+    return  image, im, contours 
+
+
+def plot_results(org_img, img):
+    """Draw contours in orginal image
+    
+    Args:
+        org_img: original image
+        img: contour boxes
+
+    """
+    with_contours = cv2.drawContours(org_img, img ,-1,(0,255,0),3) 
+    plt.imshow(with_contours)
+    
+    
+def count_boxes(img):
+    """A box will only have 4 points.
+
+    Args:
+        img: contours
+    
+    Return:
+        
+    
+    """
+    return sum(1 for x in img if len(x) == 4)
+    
+org_img, img, contours = get_contours('boxes1.jpg')
+plot_results(org_img, img)
+
+print('There are %d boxes' % count_boxes(img))
+
+org_img_2, img_2, contours_2 = get_contours('boxes2.jpg')
+plot_results(org_img_2, img_2)
+
+print('There are %d boxes' % count_boxes(img_2))
+
+org_img_3, img_3, contours_3 = get_contours('table1.jpg')
+
+plot_results(org_img_3, img_3)
+
+print('There are %d boxes' % count_boxes(img_3))
